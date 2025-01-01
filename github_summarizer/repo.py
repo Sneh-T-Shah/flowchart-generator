@@ -2,8 +2,9 @@ from git import Repo
 import os
 from dotenv import load_dotenv
 from groq import Groq
+import os
 import shutil
-import time
+import stat
 
 load_dotenv()
 
@@ -131,6 +132,10 @@ def get_final_algo(readme,directory_sturcture,file_summary):
     response = get_llm_response(prompt)
     return response
 
+def handle_remove_readonly(func, path, exc_info):
+    os.chmod(path, stat.S_IWRITE)
+    func(path)
+
 def get_repo_algo(url):
     url = url.strip()
     dir_name = get_repo(url)
@@ -154,4 +159,5 @@ def get_repo_algo(url):
     for file in file_summaries.keys():
         final_summary += f"File: {file}\nSummary: {file_summaries[file]}\n\n"
     final_algo = get_final_algo(readme_contents, repo_dir_structure, final_summary)
+    shutil.rmtree(dir_name, onerror=handle_remove_readonly)
     return final_algo,repo_dir_structure

@@ -1,2 +1,3 @@
 github_summarizer/.env
 github_summarizer/repos/
+github_summarizer/__pycache__/
